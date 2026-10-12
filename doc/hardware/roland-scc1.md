@@ -115,9 +115,63 @@ audio at 64 kHz, and returned to silence after GS reset. Measured AC RMS was
 0.00000000 after reset. AC measurements exclude the core's constant idle DAC
 offset. All 13 focused tests passed with the external ROM set supplied.
 
-Original SCC-1 firmware and DOS utility compatibility remain unverified.
-R15199774 is still absent from the supplied archives. These are device-level
-tests with mocked host audio and I/O dispatch, not DOS guest or listening tests.
+### DOS utility compatibility
+
+The supplied utility disk was tested on 2026-10-12 under MS-DOS 6.22 on an
+emulated HP Vectra 486N with the SCC-1A ROM set. Guest input used the normal
+keyboard path. Audio was captured at the OpenAL submission boundary. This
+guest test found and fixed a ROM-loading defect: filenames passed to
+`rom_fopen` need the `roms/` prefix to search the configured ROM directories.
+The unit-test ROM loader now enforces that requirement.
+
+| Port / IRQ | CHKSCC 2.01 detection | MPUPLAY reset/setup files | SCMODE 1.0 GS / MT32 |
+| --- | --- | --- | --- |
+| 330h / 2 | Pass | Pass on clean boot | Pass; see cascade caveat below |
+| 332h / 3 | Pass | Pass | Pass |
+| 334h / 4 | Pass | Pass | IRQ autodetection fails |
+| 336h / 5 | Pass | Pass | Pass |
+| 330h / 6 | Pass | Pass from RAM disk | IRQ autodetection fails |
+| 332h / 7 | Pass | Pass | Pass |
+
+These six guest configurations cover every supported port and IRQ, not all
+24 combinations. The device-level tests cover all 24 combinations.
+Each CHKSCC run reported the configured IRQ and `MPU check OK!`.
+At 330h/IRQ2, CHKSCC's demo and MPUPLAY's `DEMO1.MID` produced nonconstant
+PCM audio and stopped with Escape. CHKSCC's GS reset and MT-32 simulation
+send screens also completed. Demo songs were sampled, not played to the end.
+
+MPUPLAY completed `GS_RESET.MID` and `MT32EMUL.MID` using explicit jumper
+arguments, for example:
+
+```text
+MPUPLAY -I3 -P332 GS_RESET.MID MT32EMUL.MID
+MPUPLAY -I3 -P332 DEMO1.MID
+SCMODE -p 332 gs
+SCMODE -p 332 mt32
+```
+
+SCMODE returned errorlevel 0 for both modes at IRQ 2, 3, 5 and 7. Its
+documentation lists only those IRQs; autodetection at IRQ 4 and 6 returned
+errorlevel 1 with `Could not autodetect IRQ.` Use CHKSCC or MPUPLAY's mode
+files at those IRQs. IRQ 6 conflicts with the floppy controller: a
+floppy-based MPUPLAY run stalled, while the same files completed from a
+DOS RAM disk.
+
+SCMODE also leaves the master PIC's cascade IRQ masked when using IRQ 2
+on this AT guest. The measured master/slave masks changed from `00h/99h`
+to `04h/99h`. A subsequent MPUPLAY run reported `Interrupt Level is wrong !`.
+Restoring only the cascade mask bit to its prior value allowed both MIDI
+files to complete without rebooting. Prefer IRQ 3, 5 or 7 when mixing these
+utilities, or reboot before MPUPLAY after SCMODE at IRQ 2. The emulator
+preserves the guest's PIC writes rather than overriding this utility behavior.
+
+Selecting SCC-1 also normalized `mpu401_standalone = 0` to `1` in the running
+guest configuration. No ROMs, DOS images, utility executables or MIDI demo
+files are included in the repository.
+
+Original SCC-1 firmware remains unverified because R15199774 is absent
+from the supplied archives. Captured PCM was measured, not auditioned;
+instrument accuracy and GS/MT-32 parameter readback were not verified.
 The upstream core does not deliver synthesizer UART transmit data back to
 the guest, so synthesizer SysEx readback is not implemented. The standalone
 MPU's external MIDI input support remains available.

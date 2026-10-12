@@ -33,6 +33,9 @@ int machine, sound_is_float = 1, midi_output_device_current;
 
 FILE *rom_fopen(const char *path, char *)
 {
+    // Production rom_fopen searches configured ROM roots only for this prefix.
+    if (strncmp(path, "roms/", 5))
+        return nullptr;
     auto it = rom_files.find(path);
     if (it == rom_files.end())
         return nullptr;

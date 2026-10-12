@@ -33,11 +33,11 @@ static const struct {
     RomLocation location;
     size_t size;
 } scc1_roms[] = {
-    { "sound/roland/scc1/cm300_rom1.bin", RomLocation::ROM1, 0x8000 },
-    { "sound/roland/scc1/cm300_rom2.bin", RomLocation::ROM2, 0x40000 },
-    { "sound/roland/scc1/cm300_waverom1.bin", RomLocation::WAVEROM1, 0x100000 },
-    { "sound/roland/scc1/cm300_waverom2.bin", RomLocation::WAVEROM2, 0x100000 },
-    { "sound/roland/scc1/cm300_waverom3.bin", RomLocation::WAVEROM3, 0x100000 }
+    { "roms/sound/roland/scc1/cm300_rom1.bin", RomLocation::ROM1, 0x8000 },
+    { "roms/sound/roland/scc1/cm300_rom2.bin", RomLocation::ROM2, 0x40000 },
+    { "roms/sound/roland/scc1/cm300_waverom1.bin", RomLocation::WAVEROM1, 0x100000 },
+    { "roms/sound/roland/scc1/cm300_waverom2.bin", RomLocation::WAVEROM2, 0x100000 },
+    { "roms/sound/roland/scc1/cm300_waverom3.bin", RomLocation::WAVEROM3, 0x100000 }
 };
 
 struct scc1_t {
