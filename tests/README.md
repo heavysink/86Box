@@ -17,6 +17,17 @@ Try to match your code's filename and append the type of test it is.
 
 ## Summary of current tests
 
+# Roland SCC-1
+
+Build `scc1_tests` with `BUILD_TESTING=ON`, then run
+`ctest --test-dir build -R '^SCC1\.' --output-on-failure`.
+Tests use synthetic H8 firmware to exercise the ROM loader, PCM output,
+raw MIDI path and all 24 independent MPU-401 jumper combinations.
+Set `SCC1_ROM_DIR` to a directory containing a complete `cm300_*.bin` set
+for the optional firmware boot, MIDI playback and GS reset test.
+See [SCC-1 setup and validation notes](../doc/hardware/roland-scc1.md)
+for required ROMs and firmware compatibility limits.
+
 # TEAC CD-55A
 
 The `mke_cdrom_tests` target includes Panasonic regressions and TEAC protocol

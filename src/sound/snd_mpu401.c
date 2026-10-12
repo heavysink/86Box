@@ -1723,6 +1723,14 @@ mpu401_init(mpu_t *mpu, uint16_t addr, int irq, int mode, int receive_input)
 void
 mpu401_device_add(void)
 {
+    if (midi_out_device_getdevice(midi_output_device_current) == &scc1_device) {
+        if (machine_has_bus(machine, MACHINE_BUS_ISA)) {
+            mpu401_standalone_enable = 1;
+            device_add(&scc1_mpu401_device);
+        }
+        return;
+    }
+
     if (!mpu401_standalone_enable)
         return;
 
@@ -1802,6 +1810,13 @@ mpu401_standalone_init(const device_t *info)
     } else {
         base = device_get_config_hex16("base");
         irq  = device_get_config_int("irq");
+    }
+
+    if (info == &scc1_mpu401_device) {
+        if (base < 0x330 || base > 0x336 || (base & 1))
+            base = 0x330;
+        if (irq < 2 || irq > 7)
+            irq = 2;
     }
 
     mpu401_init(mpu, base, irq, M_INTELLIGENT, device_get_config_int("receive_input"));
@@ -1940,4 +1955,71 @@ const device_t mpu401_mca_device = {
     .speed_changed = NULL,
     .force_redraw  = NULL,
     .config        = mpu401_standalone_mca_config
+};
+
+static const device_config_t scc1_mpu401_config[] = {
+  // clang-format off
+    {
+        .name           = "base",
+        .description    = "MPU-401 Address",
+        .type           = CONFIG_HEX16,
+        .default_string = NULL,
+        .default_int    = 0x330,
+        .file_filter    = NULL,
+        .spinner        = { 0 },
+        .selection      = {
+            { .description = "0x330", .value = 0x330 },
+            { .description = "0x332", .value = 0x332 },
+            { .description = "0x334", .value = 0x334 },
+            { .description = "0x336", .value = 0x336 },
+            { .description = ""                      }
+        },
+        .bios           = { { 0 } }
+    },
+    {
+        .name           = "irq",
+        .description    = "MPU-401 IRQ",
+        .type           = CONFIG_SELECTION,
+        .default_string = NULL,
+        .default_int    = 2,
+        .file_filter    = NULL,
+        .spinner        = { 0 },
+        .selection      = {
+            { .description = "IRQ 2", .value = 2 },
+            { .description = "IRQ 3", .value = 3 },
+            { .description = "IRQ 4", .value = 4 },
+            { .description = "IRQ 5", .value = 5 },
+            { .description = "IRQ 6", .value = 6 },
+            { .description = "IRQ 7", .value = 7 },
+            { .description = ""                  }
+        },
+        .bios           = { { 0 } }
+    },
+    {
+        .name           = "receive_input",
+        .description    = "Receive MIDI input",
+        .type           = CONFIG_BINARY,
+        .default_string = NULL,
+        .default_int    = 1,
+        .file_filter    = NULL,
+        .spinner        = { 0 },
+        .selection      = { { 0 } },
+        .bios           = { { 0 } }
+    },
+    { .name = "", .description = "", .type = CONFIG_END }
+  // clang-format on
+};
+
+const device_t scc1_mpu401_device = {
+    .name          = "Roland SCC-1 MPU-401",
+    .internal_name = "scc1_mpu401",
+    .flags         = DEVICE_ISA,
+    .local         = 0,
+    .init          = mpu401_standalone_init,
+    .close         = mpu401_standalone_close,
+    .reset         = NULL,
+    .available     = NULL,
+    .speed_changed = NULL,
+    .force_redraw  = NULL,
+    .config        = scc1_mpu401_config
 };

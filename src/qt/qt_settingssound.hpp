@@ -69,6 +69,7 @@ private:
     SettingsCompleter   *scMidiIn;
 
     int soundCardCurrent[4];
+    void updateMpu401Enabled();
     int mpu401Enabled;
     int midiOutCurrent;
     int midiInCurrent;

@@ -1,0 +1,12 @@
+Nuked-SC55 backend, jcmoyer fork, GPL-2.0-or-later.
+Source: https://github.com/jcmoyer/Nuked-SC55
+Revision: b75cfc2e2ccd6b4f4a61c872acc61e7fe3bf24f4 (0.8.0)
+
+Only src/backend and LICENSE are vendored. The local CMakeLists builds the
+backend with its cached instruction decoder; no SDL, frontend, ROM images,
+or system MIDI libraries are included. This target and the SCC-1 adapter
+require C++23; the rest of 86Box retains its existing language standard.
+config.h.in pins upstream version metadata instead of using 86Box's version.
+mcu.cpp and decoder2/dispatch.cpp throw std::runtime_error instead of exiting
+the host process on an unsupported MCU operation. The adapter catches these
+errors and stops the synthesizer. All other backend files are unchanged.

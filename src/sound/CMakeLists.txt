@@ -259,3 +259,10 @@ endif()
 
 add_subdirectory(resid-fp)
 target_link_libraries(86Box resid-fp)
+
+# SCC-1 uses the ROM-backed Nuked-SC55 core, independently of CLAP support.
+add_subdirectory(nuked_sc55)
+add_library(scc1 OBJECT midi_scc1.cpp)
+target_compile_features(scc1 PRIVATE cxx_std_23)
+target_link_libraries(scc1 PRIVATE nuked_sc55)
+target_link_libraries(86Box scc1 nuked_sc55)

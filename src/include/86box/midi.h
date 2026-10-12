@@ -110,6 +110,7 @@ extern void midi_in_sysex(uint8_t *buffer, uint32_t len);
 #define MIDI_INPUT_INTERNAL_NAME "midi_in"
 
 #ifdef EMU_DEVICE_H
+extern const device_t scc1_device;
 extern const device_t rtmidi_output_device;
 extern const device_t rtmidi_input_device;
 #    ifdef USE_OPL4ML

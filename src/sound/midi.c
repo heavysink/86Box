@@ -79,6 +79,7 @@ typedef struct
 static const MIDI_OUT_DEVICE midi_out_devices[] = {
     // clang-format off
     { &device_none          },
+    { &scc1_device          },
 #ifdef USE_FLUIDSYNTH
     { &fluidsynth_device    },
 #endif /* USE_FLUIDSYNTH */

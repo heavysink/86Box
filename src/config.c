@@ -976,6 +976,9 @@ load_sound(void)
         midi_input_device_current = 0;
 
     mpu401_standalone_enable = !!ini_section_get_int(cat, "mpu401_standalone", 0);
+    if (midi_out_device_getdevice(midi_output_device_current) == &scc1_device &&
+        machine_has_bus(machine, MACHINE_BUS_ISA))
+        mpu401_standalone_enable = 1;
 
     /* Backwards compatibility for standalone SSI-2001, CMS and GUS from v3.11 and older. */
     const char *legacy_cards[][2] = {

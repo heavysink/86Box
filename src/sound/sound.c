@@ -1139,8 +1139,7 @@ sound_card_reset(void)
 
     sound_card_init();
 
-    if (mpu401_standalone_enable)
-        mpu401_device_add();
+    mpu401_device_add();
 }
 
 void

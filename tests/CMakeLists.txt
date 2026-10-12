@@ -1,3 +1,4 @@
+add_subdirectory(sound)
 add_subdirectory(cdrom)
 add_subdirectory(cpu)
 add_subdirectory(floppy)
